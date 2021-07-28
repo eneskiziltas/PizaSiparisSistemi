@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,23 +18,23 @@ namespace VeriparkOopDegerlendirme1
             InitializeComponent();
         }
 
-        List<Pizzalar> pizzaList = new List<Pizzalar>();
+        List<Pizza> pizzaList = new List<Pizza>();
         string[] ebatlar = { "Küçük", "Orta", "Büyük", "Maxi" };
         string[] kenarSecim = { "Kalin", "Ince" };
-        string[] malzemeler = { "Dana Jambon","Sosis","Mısır","Anguez","Zeytin","Salam","Sucuk","Mantar","Ton Balığı","Peynir"};
+        string[] malzemeler = { "Dana Jambon", "Sosis", "Mısır", "Anguez", "Zeytin", "Salam", "Sucuk", "Mantar", "Ton Balığı", "Peynir" };
         string secilenMalzemeler;
         double toplamTutar = 0;
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            cmbEbatlarDoldur();
-            pizzalariDoldur();
-            radioButtonDoldur();
-            cbDoldur();
+            CmbEbatlarDoldur();
+            PizzalariDoldur();
+            RadioButtonDoldur();
+            CbDoldur();
 
         }
 
-        public void cmbEbatlarDoldur()
+        public void CmbEbatlarDoldur()
         {
             for (int i = 0; i < ebatlar.Length; i++)
             {
@@ -42,7 +43,7 @@ namespace VeriparkOopDegerlendirme1
             }
         }
 
-        public void radioButtonDoldur()
+        public void RadioButtonDoldur()
         {
             for (int i = 0; i < kenarSecim.Length; i++)
             {
@@ -53,6 +54,7 @@ namespace VeriparkOopDegerlendirme1
                         RadioButton rb = (RadioButton)cont;
                         if (rb.Text == "" || rb.Text == null)
                         {
+
                             rb.Text = kenarSecim[i];
                             break;
                         }
@@ -62,9 +64,9 @@ namespace VeriparkOopDegerlendirme1
             }
         }
 
-        
-        
-        public void cbDoldur()
+
+
+        public void CbDoldur()
         {
             for (int i = 0; i < malzemeler.Length; i++)
             {
@@ -85,40 +87,53 @@ namespace VeriparkOopDegerlendirme1
             }
         }
 
-        public void cbKontrol()
+        public void CbKontrol()
         {
 
-            
-                foreach (var cont in this.Controls)
-                {
-                    if (cont is CheckBox)
-                    {
-                        CheckBox cb = (CheckBox)cont;
-                        if (cb.Checked)
-                        {
-                            secilenMalzemeler = secilenMalzemeler + cb.Text + ", ";     
-                        }
 
+            foreach (var cont in this.Controls)
+            {
+                if (cont is CheckBox)
+                {
+                    CheckBox cb = (CheckBox)cont;
+                    if (cb.Checked)
+                    {
+                        secilenMalzemeler = secilenMalzemeler + cb.Text + ", ";
                     }
+
                 }
-            
+            }
+
         }
 
-        public void pizzalariDoldur()
+        public void PizzalariDoldur()
         {
-            Pizzalar klasikpizza = new Pizzalar("KLASIK", 14);
+            Pizza klasikpizza = new Pizza("KLASIK", 14);
             pizzaList.Add(klasikpizza);
-            Pizzalar karisikpizza = new Pizzalar("KARISIK", 17);
+            Pizza karisikpizza = new Pizza("KARISIK", 17);
             pizzaList.Add(karisikpizza);
-            Pizzalar extravaganzapizza = new Pizzalar("EXRAVAGANZA", 21);
+            Pizza extravaganzapizza = new Pizza("EXRAVAGANZA", 21);
             pizzaList.Add(klasikpizza);
-            Pizzalar italianopizza = new Pizzalar("ITALIANO", 20);
+            Pizza italianopizza = new Pizza("ITALIANO", 20);
             pizzaList.Add(italianopizza);
-            Pizzalar turkishpizza = new Pizzalar("TURKISH", 23);
+            Pizza turkishpizza = new Pizza("TURKISH", 23);
             pizzaList.Add(turkishpizza);
+            Pizza tunapizza = new Pizza("TUNA", 18);
+            pizzaList.Add(tunapizza);
+            Pizza seafeedpizza = new Pizza("SEAFEED", 19);
+            pizzaList.Add(seafeedpizza);
+            Pizza kastamonupizza = new Pizza("KASTAMONU", 20);
+            pizzaList.Add(kastamonupizza);
+            Pizza calypsopizza = new Pizza("CALYPSO", 24);
+            pizzaList.Add(calypsopizza);
+            Pizza akdenizpizza = new Pizza("AKDENİZ", 21);
+            pizzaList.Add(akdenizpizza);
+            Pizza karadenizpizza = new Pizza("KARADENİZ", 21);
+            pizzaList.Add(karadenizpizza);
 
 
-            foreach (Pizzalar item in pizzaList)
+
+            foreach (Pizza item in pizzaList)
             {
 
                 ListViewItem li = new ListViewItem();
@@ -130,14 +145,14 @@ namespace VeriparkOopDegerlendirme1
 
 
         ListView.SelectedListViewItemCollection secilenElemanlar;
-        List<Pizzalar> secilenUrunler = new List<Pizzalar>();
+        List<Pizza> secilenUrunler = new List<Pizza>();
 
         private void btnSepeteEkle_Click(object sender, EventArgs e)
         {
             secilenMalzemeler = "";
             secilenElemanlar = listPizzalar2.SelectedItems;
 
-            cbKontrol();
+            CbKontrol();
 
 
             int check = 0;
@@ -164,14 +179,26 @@ namespace VeriparkOopDegerlendirme1
 
                 foreach (ListViewItem item in secilenElemanlar)
                 {
-                    Pizzalar secilenUrun = (Pizzalar)item.Tag;
+                    Pizza secilenUrun = (Pizza)item.Tag;
+                    //secilenUrun.Ebat = cmbEbatlar.SelectedItem.ToString();
                     secilenUrunler.Add(secilenUrun);
-                    Sipariş spr = new Sipariş(secilenUrun, cmbEbatlar.SelectedItem.ToString(), rdbbtn.Text, int.Parse(txtAdet.Text),secilenMalzemeler);
+                    //Sipariş spr = new Sipariş(secilenUrun, cmbEbatlar.SelectedItem.ToString(), rdbbtn.Text, int.Parse(txtAdet.Text),secilenMalzemeler);
 
-                    toplamTutar += spr.toplamTutarHesapla();
-                    spr.SiparisTutari = spr.toplamTutarHesapla();
-                    lblToplamTutar.Text = toplamTutar.ToString();
-                    listSepet.Items.Add(spr.ToString());
+                    if (Util.SayiMi(txtAdet.Text))
+                    {
+                        MessageBox.Show("Geçersiz Adet Sayisi Girdiniz!");
+                    }
+                    else
+                    {
+                        PizzaSiparis spr1 = new PizzaSiparis(secilenUrun, cmbEbatlar.SelectedItem.ToString(), rdbbtn.Text, int.Parse(txtAdet.Text));
+
+                        toplamTutar += spr1.ToplamTutarHesapla(spr1.Adet);
+                        spr1.SiparisTutari = spr1.ToplamTutarHesapla(spr1.Adet);
+                        lblToplamTutar.Text = toplamTutar.ToString();
+                        listSepet.Items.Add(spr1.ToString());
+                    }
+
+
                 }
 
 
@@ -184,7 +211,7 @@ namespace VeriparkOopDegerlendirme1
             double araToplam = 0;
 
             ListView.SelectedListViewItemCollection secilenUrunAraToplam;
-            List<Pizzalar> secilenUrunlerAraToplam = new List<Pizzalar>();
+            List<Pizza> secilenUrunlerAraToplam = new List<Pizza>();
 
             secilenUrunAraToplam = listPizzalar2.SelectedItems;
 
@@ -214,12 +241,23 @@ namespace VeriparkOopDegerlendirme1
 
                 foreach (ListViewItem secilenEleman in secilenUrunAraToplam)
                 {
-                    Pizzalar secilenUrun = (Pizzalar)secilenEleman.Tag;
+                    Pizza secilenUrun = (Pizza)secilenEleman.Tag;
                     secilenUrunler.Add(secilenUrun);
-                    Sipariş spr = new Sipariş(secilenUrun, cmbEbatlar.SelectedItem.ToString(), rdbbtn.Text, int.Parse(txtAdet.Text),secilenMalzemeler);
 
-                    araToplam += spr.tutarHesapla()*spr.Adet;
-                    txtAraToplam.Text = araToplam.ToString();
+
+
+                    if (Util.SayiMi(txtAdet.Text))
+                    {
+                        MessageBox.Show("Geçersiz Adet Sayisi Girdiniz!");
+                    }
+                    else
+                    {
+
+                        PizzaSiparis spr1 = new PizzaSiparis(secilenUrun, cmbEbatlar.SelectedItem.ToString(), rdbbtn.Text, Convert.ToInt32(txtAdet.Text));
+                        araToplam += spr1.TutarHesapla() * spr1.Adet;
+
+                        txtAraToplam.Text = araToplam.ToString();
+                    }
 
                 }
 
@@ -231,9 +269,12 @@ namespace VeriparkOopDegerlendirme1
         {
 
             MessageBox.Show("Toplam " + secilenUrunler.Count + " adet siparişiniz " + toplamTutar.ToString() + "TL tutarındadır");
-            
+
+
         }
 
-        
+
+
+
     }
 }
